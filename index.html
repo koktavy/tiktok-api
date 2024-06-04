@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok API Homepage</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+      }
+    }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor(0x2d2d2d);
+        const light = new THREE.AmbientLight(0x404040, 10);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 5);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        scene.add(light);
+        directionalLight.position.set(1, 1, 1).normalize();
+        document.body.appendChild(renderer.domElement);
+        scene.add(directionalLight);
+        const loader = new GLTFLoader();
+        let model = undefined;
+        loader.load('tiktok-logo.glb', function (gltf) {
+            model = gltf.scene;            
+            scene.add(model);
+            directionalLight.target = model;
+        });
+
+        camera.position.z = 2;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (model) model.rotation.y -= 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
